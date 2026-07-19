@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://promptbasedtutorbrain.dev/schemas/session.json",
+  "title": "Study Session",
+  "description": "Durable working context for one study session. Persisting this is what allows a student to resume tomorrow from where they stopped. Holds no evidence: evidence lives in schemas/event.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "session_id",
+    "student_id",
+    "status",
+    "started_at",
+    "timezone",
+    "planned_minutes"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "student_id": { "type": "string", "minLength": 1 },
+    "plan_id": { "type": "string", "minLength": 1 },
+
+    "status": {
+      "enum": ["active", "suspended", "completed", "abandoned"],
+      "description": "A suspended session is resumable. Only the student or an explicit timeout abandons one."
+    },
+
+    "started_at": { "type": "string", "format": "date-time" },
+    "last_activity_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Student's declared IANA timezone. Due-state evaluation uses this."
+    },
+
+    "planned_minutes": { "type": "integer", "minimum": 0 },
+    "elapsed_minutes": { "type": "integer", "minimum": 0, "default": 0 },
+
+    "current_action": {
+      "$ref": "#/$defs/action_record",
+      "description": "The action in flight. On resume, this is re-presented rather than re-selected."
+    },
+
+    "completed_actions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/action_record" }
+    },
+
+    "emitted_event_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Events this session committed. The audit link from session to ledger."
+    },
+
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Bounded assumptions applied during the session, per Constitution §2 rule 5."
+    },
+
+    "resume_hint": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Student-facing summary of where the session stopped and what is due next."
+    }
+  },
+
+  "$defs": {
+    "action_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_type", "topic_id", "objective", "status"],
+      "properties": {
+        "action_type": {
+          "enum": [
+            "teach", "diagnose", "practice", "retrieve", "revise",
+            "evaluate_answer", "draft_check", "plan", "reschedule",
+            "mentor_checkin", "analyse_pyq", "brief_current_affairs", "clarify"
+          ]
+        },
+        "topic_id": { "type": "string", "minLength": 1 },
+        "objective": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["selected", "in_progress", "completed", "deferred", "failed"] },
+        "duration_minutes": { "type": "integer", "minimum": 0 },
+        "evidence_expected": {
+          "enum": ["retrieval", "practice", "answer", "review", "attendance", "none"]
+        },
+        "selected_band": { "enum": ["P0", "P1", "P2", "P3", "P4", "P5"] },
+        "fallback_action": { "type": "string", "minLength": 1 },
+        "correlation_id": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

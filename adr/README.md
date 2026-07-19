@@ -9,6 +9,7 @@ supersede one with a later record rather than editing its decision.
 | [ADR-0002](ADR-0002.md) | Use append-only learning evidence with derived summaries | Accepted |
 | [ADR-0003](ADR-0003.md) | Validate structured outputs before state mutation | Accepted |
 | [ADR-0004](ADR-0004.md) | Establish a single authority hierarchy for component conflicts | Accepted |
+| [ADR-0005](ADR-0005.md) | Close the four dangling runtime contracts before implementation | Accepted |
 
 ## Required structure
 

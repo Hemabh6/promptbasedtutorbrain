@@ -6,9 +6,16 @@ Machine-validated state contracts. JSON Schema Draft 2020-12.
 | --- | --- | --- |
 | [`student.json`](student.json) | Current learner state | [Student Model](../docs/07%20Student%20Model.md) |
 | [`memory.json`](memory.json) | One durable evidence or knowledge record | [Memory Architecture](../docs/08%20Memory%20Architecture.md) |
+| [`event.json`](event.json) | One immutable ledger observation | [ADR-0002](../adr/ADR-0002.md) |
 | [`revision.json`](revision.json) | One retrievable item and its attempt history | [Revision Engine](../docs/05%20Revision%20Engine.md) |
 | [`study_plan.json`](study_plan.json) | A horizon's allocated work | [Planning Engine](../docs/04%20Planning%20Engine.md) |
+| [`session.json`](session.json) | Resumable working context for one session | [Memory Architecture](../docs/08%20Memory%20Architecture.md) |
 | [`answer.json`](answer.json) | One rubric evaluation | [Evaluation Engine](../docs/06%20Evaluation%20Engine.md) |
+| [`rubric.json`](rubric.json) | Versioned dimension weights | [Evaluation Engine](../docs/06%20Evaluation%20Engine.md) |
+| [`topic.json`](topic.json) | One syllabus node | [ADR-0005](../adr/ADR-0005.md) |
+
+`event.json`, `session.json`, `rubric.json`, and `topic.json` were added by
+[ADR-0005](../adr/ADR-0005.md) to close dangling references in the Phase 1 baseline.
 
 ## Rules
 

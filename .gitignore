@@ -4,3 +4,16 @@
 __pycache__/
 *.pyc
 node_modules/
+
+# Python build and tooling
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local runtime state. Student data is never committed.
+.tutorbrain-data/

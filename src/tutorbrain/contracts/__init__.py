@@ -1,0 +1,135 @@
+"""Typed runtime contracts.
+
+Each module mirrors one file in `schemas/`. The Pydantic models are the in-process
+representation; the JSON Schemas remain the published contract. `validation.SchemaValidator`
+checks both, so a drift between them is a test failure rather than a silent divergence.
+"""
+
+from tutorbrain.contracts.answer import (
+    AnswerEvaluation,
+    CandidateKind,
+    DimensionScore,
+    FollowUpCandidate,
+    UnverifiedClaim,
+    UnverifiedReason,
+)
+from tutorbrain.contracts.common import (
+    SCHEMA_VERSION,
+    ActionType,
+    AnswerId,
+    Contract,
+    CorrelationId,
+    EventId,
+    EvidenceType,
+    MemoryId,
+    PlanId,
+    PriorityBand,
+    RecallOutcome,
+    RevisionId,
+    RubricDimension,
+    SessionId,
+    StudentId,
+    TaskId,
+    TopicId,
+    UnitInterval,
+)
+from tutorbrain.contracts.event import Event, EventKind, EventProvenance
+from tutorbrain.contracts.memory import (
+    MemoryKind,
+    MemoryLayer,
+    MemoryRecord,
+    Provenance,
+    TrustTier,
+)
+from tutorbrain.contracts.revision import RevisionAttempt, RevisionRecord, RevisionStatus
+from tutorbrain.contracts.rubric import Rubric, RubricDimensionWeight
+from tutorbrain.contracts.session import (
+    ActionRecord,
+    ActionStatus,
+    SessionStatus,
+    StudySession,
+)
+from tutorbrain.contracts.student import (
+    Availability,
+    Constraint,
+    DerivedProfile,
+    ExamContext,
+    ExamStage,
+    LearningStyle,
+    PerformanceMetrics,
+    RevisionSummary,
+    Student,
+    TopicMastery,
+)
+from tutorbrain.contracts.study_plan import (
+    ConflictKind,
+    PlanConflict,
+    PlanStatus,
+    PlanTask,
+    StudyPlan,
+    TaskSource,
+    TaskStatus,
+)
+from tutorbrain.contracts.topic import Topic
+
+__all__ = [
+    "SCHEMA_VERSION",
+    "ActionRecord",
+    "ActionStatus",
+    "ActionType",
+    "AnswerEvaluation",
+    "AnswerId",
+    "Availability",
+    "CandidateKind",
+    "ConflictKind",
+    "Constraint",
+    "Contract",
+    "CorrelationId",
+    "DerivedProfile",
+    "DimensionScore",
+    "Event",
+    "EventId",
+    "EventKind",
+    "EventProvenance",
+    "EvidenceType",
+    "ExamContext",
+    "ExamStage",
+    "FollowUpCandidate",
+    "LearningStyle",
+    "MemoryId",
+    "MemoryKind",
+    "MemoryLayer",
+    "MemoryRecord",
+    "PerformanceMetrics",
+    "PlanConflict",
+    "PlanId",
+    "PlanStatus",
+    "PlanTask",
+    "PriorityBand",
+    "Provenance",
+    "RecallOutcome",
+    "RevisionAttempt",
+    "RevisionId",
+    "RevisionRecord",
+    "RevisionStatus",
+    "RevisionSummary",
+    "Rubric",
+    "RubricDimension",
+    "RubricDimensionWeight",
+    "SessionId",
+    "SessionStatus",
+    "Student",
+    "StudentId",
+    "StudyPlan",
+    "StudySession",
+    "TaskId",
+    "TaskSource",
+    "TaskStatus",
+    "Topic",
+    "TopicId",
+    "TopicMastery",
+    "TrustTier",
+    "UnitInterval",
+    "UnverifiedClaim",
+    "UnverifiedReason",
+]

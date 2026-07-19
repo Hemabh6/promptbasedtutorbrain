@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://promptbasedtutorbrain.dev/schemas/topic.json",
+  "title": "Syllabus Topic",
+  "description": "One addressable syllabus node. The referent of every topic_id and the source of exam_weight for Decision Engine scoring.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "topic_id", "title", "paper", "exam_weight"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+
+    "topic_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)*$",
+      "description": "Dotted lowercase path, e.g. polity.fundamental_rights. Stable public reference."
+    },
+
+    "title": { "type": "string", "minLength": 1 },
+
+    "aliases": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Natural-language forms a student may use, e.g. 'Fundamental Rights'. Used for deterministic topic resolution without a model call."
+    },
+
+    "paper": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Syllabus paper, e.g. GS2. Free text: syllabus structure is exam-specific."
+    },
+
+    "parent_topic_id": { "type": "string", "minLength": 1 },
+
+    "exam_weight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Normalised syllabus importance. Consumed by the Decision Engine scoring formula."
+    },
+
+    "baseline_effort_cost": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.5,
+      "description": "Normalised intrinsic difficulty. Consumed as effort_cost when no learner-specific estimate exists."
+    },
+
+    "prerequisites": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "topic_ids that MUST be satisfied first. Cycles are a validation failure."
+    },
+
+    "typical_minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Estimated focused minutes for a first pass. Planning input, not a limit."
+    },
+
+    "command_words": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Command words this topic is commonly examined with."
+    }
+  }
+}
