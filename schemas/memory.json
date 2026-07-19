@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://promptbasedtutorbrain.dev/schemas/memory.json",
+  "title": "Learning Memory Record",
+  "description": "One immutable unit of durable knowledge or evidence. The source from which derived views are rebuilt. See docs/08 Memory Architecture.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "memory_id",
+    "student_id",
+    "kind",
+    "topic_id",
+    "content",
+    "source_event_id",
+    "recorded_at",
+    "confidence"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "memory_id": { "type": "string", "minLength": 1 },
+    "student_id": { "type": "string", "minLength": 1 },
+
+    "kind": {
+      "enum": ["fact", "misconception", "preference", "strategy", "summary"],
+      "description": "A summary is derived and rebuildable; all other kinds are primary observations."
+    },
+    "layer": {
+      "enum": ["profile", "ledger", "index"],
+      "description": "Which memory layer owns this record. Working context is session-bounded and never persisted here."
+    },
+    "derived": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for records computed from other records. Retrieval MUST label these so a summary is never mistaken for an observation."
+    },
+
+    "topic_id": { "type": "string", "minLength": 1 },
+    "content": { "type": "string", "minLength": 1 },
+
+    "source_event_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The validated event that produced this record. A record without a source event is not persistable."
+    },
+    "derived_from": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "memory_ids this record summarises. Required when derived is true."
+    },
+
+    "recorded_at": { "type": "string", "format": "date-time" },
+    "evidence_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the underlying evidence occurred. Drives contradiction resolution under Constitution C5."
+    },
+
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Below memory.min_confidence_durable, the candidate is rejected for durable storage."
+    },
+
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Required for externally sourced and current-affairs claims. Without it, the claim is ineligible for durable memory.",
+      "required": ["source_url", "published_at", "accessed_at"],
+      "properties": {
+        "source_url": { "type": "string", "format": "uri" },
+        "publisher": { "type": "string", "minLength": 1 },
+        "published_at": { "type": "string", "format": "date-time" },
+        "accessed_at": { "type": "string", "format": "date-time" },
+        "trust_tier": { "enum": ["official", "established", "secondary", "unverified"] }
+      }
+    },
+
+    "contradicts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "memory_ids this record conflicts with. Both records are retained; resolution follows Constitution C5."
+    },
+
+    "superseded_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Set when newer, higher-quality evidence replaces this record. The record itself is never deleted or rewritten."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "derived": { "const": true } }, "required": ["derived"] },
+      "then": { "required": ["derived_from"] }
+    }
+  ]
+}
