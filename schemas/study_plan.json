@@ -1,1 +1,129 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://promptbasedtutorbrain.dev/schemas/study_plan.json","title":"Study Plan","type":"object","additionalProperties":false,"required":["schema_version","plan_id","student_id","status","horizon_start","horizon_end","capacity_minutes","tasks"],"properties":{"schema_version":{"const":"1.0"},"plan_id":{"type":"string","minLength":1},"student_id":{"type":"string","minLength":1},"status":{"enum":["proposed","accepted","superseded","completed"]},"horizon_start":{"type":"string","format":"date"},"horizon_end":{"type":"string","format":"date"},"capacity_minutes":{"type":"integer","minimum":0},"tasks":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["task_id","topic_id","objective","scheduled_for","minutes","evidence_type","status"],"properties":{"task_id":{"type":"string","minLength":1},"topic_id":{"type":"string","minLength":1},"objective":{"type":"string","minLength":1},"scheduled_for":{"type":"string","format":"date"},"minutes":{"type":"integer","minimum":1},"evidence_type":{"enum":["retrieval","practice","answer","review","attendance"]},"status":{"enum":["planned","done","skipped","deferred"]},"prerequisites":{"type":"array","items":{"type":"string"},"uniqueItems":true}}}}}}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://promptbasedtutorbrain.dev/schemas/study_plan.json",
+  "title": "Study Plan",
+  "description": "A capacity-bounded allocation of work across one horizon. Proposed until the student accepts it. See docs/04 Planning Engine.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_id",
+    "student_id",
+    "status",
+    "horizon_start",
+    "horizon_end",
+    "capacity_minutes",
+    "tasks"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "plan_id": { "type": "string", "minLength": 1 },
+    "student_id": { "type": "string", "minLength": 1 },
+
+    "status": {
+      "enum": ["proposed", "accepted", "superseded", "completed"],
+      "description": "At most one accepted plan per student and horizon. A replaced plan becomes superseded, never rewritten."
+    },
+
+    "supersedes_plan_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The plan this one replaces, preserving the revision lineage."
+    },
+
+    "horizon_start": { "type": "string", "format": "date" },
+    "horizon_end": { "type": "string", "format": "date" },
+
+    "capacity_minutes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Declared availability less the recovery reserve. Scheduled minutes MUST NOT exceed planning.capacity_utilization_max of this value without confirmation."
+    },
+
+    "reserved_revision_minutes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Capacity reserved for the Revision Engine's due set before any new coverage is allocated."
+    },
+
+    "accepted_at": { "type": "string", "format": "date-time" },
+
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "topic_id",
+          "objective",
+          "scheduled_for",
+          "minutes",
+          "evidence_type",
+          "status"
+        ],
+        "properties": {
+          "task_id": { "type": "string", "minLength": 1 },
+          "topic_id": { "type": "string", "minLength": 1 },
+          "objective": {
+            "type": "string",
+            "minLength": 1,
+            "description": "One observable outcome. Not a topic label."
+          },
+          "scheduled_for": { "type": "string", "format": "date" },
+          "minutes": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Estimated focused minutes. MUST be at least planning.min_task_minutes."
+          },
+          "evidence_type": {
+            "enum": ["retrieval", "practice", "answer", "review", "attendance"]
+          },
+          "status": {
+            "enum": ["planned", "blocked", "done", "skipped", "deferred"],
+            "description": "A task with unsatisfied prerequisites is blocked, not skipped."
+          },
+          "source": {
+            "enum": ["revision_due", "coverage", "prerequisite", "answer_practice", "student_request"],
+            "description": "Why this task exists. revision_due tasks originate from the Revision Engine and MUST NOT be dropped to fit capacity."
+          },
+          "prerequisites": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "revision_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Present when source is revision_due. Links to schemas/revision.json."
+          }
+        }
+      }
+    },
+
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Bounded assumptions applied where state was missing. Required by Constitution §2 rule 5."
+    },
+
+    "conflicts": {
+      "type": "array",
+      "description": "Trade-offs surfaced to the student. A plan MUST NOT resolve these silently.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "description"],
+        "properties": {
+          "kind": { "enum": ["capacity", "prerequisite", "deadline", "revision_overflow"] },
+          "description": { "type": "string", "minLength": 1 },
+          "affected_task_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}
